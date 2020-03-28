@@ -21,8 +21,9 @@
  */
 
 #include "config.h"
-#include <semaphore.h>
 #include <jack/jack.h>
+#include <semaphore.h>
+#include <string.h>
 #include <unistd.h>
 
 #include "libavutil/audio_fifo.h"
@@ -57,6 +58,7 @@ typedef struct JackData {
     float *         samples;
     int             pkt_xrun;
     int             jack_xrun;
+    char *          connections;
 } JackData;
 
 static int process_callback(jack_nframes_t nframes, void *arg)
@@ -110,6 +112,29 @@ static int xrun_callback(void *arg)
 {
     JackData *self = arg;
     self->jack_xrun = 1;
+    return 0;
+}
+
+static int make_connections(AVFormatContext *context, JackData *self)
+{
+    char *conn, *conn_save;
+    int test, i;
+
+    if (!self->connections)
+        return 0;
+
+    for (i = 0;
+        (conn = strtok_r(i > 0 ? NULL: self->connections, ",", &conn_save)) &&
+            i < self->nports;
+        ++i) {
+        av_log(context, AV_LOG_DEBUG, "conn %d: %s -> %s\n", i, jack_port_name(self->ports[i]), conn);
+
+        if ((test = jack_connect(self->client, jack_port_name(self->ports[i]), conn)) && test != EEXIST) {
+            av_log(context, AV_LOG_ERROR, "Unable to make connection: %s -> %s\n", jack_port_name(self->ports[i]), conn);
+            return AVERROR(EIO);
+        }
+    }
+
     return 0;
 }
 
@@ -252,6 +277,9 @@ static int audio_write_packet(AVFormatContext *context, AVPacket *pkt)
             av_log(context, AV_LOG_ERROR, "Unable to activate JACK client\n");
             return AVERROR(EIO);
         }
+
+        if (make_connections(context, self))
+            return AVERROR(EIO);
     }
 
     pthread_mutex_unlock(&self->input_mtx);
@@ -266,9 +294,16 @@ static int audio_write_trailer(AVFormatContext *context)
     return 0;
 }
 
+#define OFFSET(x) offsetof(JackData, x)
+static const AVOption options[] = {
+    { "connections", "List of jack output connections to make, in channel order.", OFFSET(connections), AV_OPT_TYPE_STRING, { .str = NULL }, 0, 0, AV_OPT_FLAG_ENCODING_PARAM },
+    { NULL },
+};
+
 static const AVClass jack_outdev_class = {
     .class_name     = "JACK outdev",
     .item_name      = av_default_item_name,
+    .option         = options,
     .version        = LIBAVUTIL_VERSION_INT,
     .category       = AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT,
 };
