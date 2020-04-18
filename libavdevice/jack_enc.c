@@ -204,6 +204,7 @@ static void stop_jack(JackData *self)
         jack_client_close(self->client);
     }
     free(self->samples);
+    free(self->buffers);
     pthread_cond_destroy(&self->input_cond);
     pthread_mutex_destroy(&self->input_mtx);
     av_audio_fifo_free(self->stream);
