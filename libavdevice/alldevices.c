@@ -70,7 +70,7 @@ av_cold void avdevice_register_all(void)
     avpriv_register_devices(outdev_list, indev_list);
 }
 
-static av_cold const void *next_input(const AVInputFormat *prev, AVClassCategory c2)
+static av_cold const void *next_input(const FFInputFormat *prev, AVClassCategory c2)
 {
     const AVClass *pc;
     const AVClassCategory c1 = AV_CLASS_CATEGORY_DEVICE_INPUT;
@@ -96,7 +96,7 @@ static av_cold const void *next_input(const AVInputFormat *prev, AVClassCategory
     return fmt;
 }
 
-static av_cold const void *next_output(const AVOutputFormat *prev, AVClassCategory c2)
+static av_cold const void *next_output(const FFOutputFormat *prev, AVClassCategory c2)
 {
     const AVClass *pc;
     const AVClassCategory c1 = AV_CLASS_CATEGORY_DEVICE_OUTPUT;
@@ -122,22 +122,22 @@ static av_cold const void *next_output(const AVOutputFormat *prev, AVClassCatego
     return fmt;
 }
 
-av_cold const AVInputFormat *av_input_audio_device_next(const AVInputFormat  *d)
+av_cold const FFInputFormat *av_input_audio_device_next(const FFInputFormat  *d)
 {
     return next_input(d, AV_CLASS_CATEGORY_DEVICE_AUDIO_INPUT);
 }
 
-av_cold const AVInputFormat *av_input_video_device_next(const AVInputFormat  *d)
+av_cold const FFInputFormat *av_input_video_device_next(const FFInputFormat  *d)
 {
     return next_input(d, AV_CLASS_CATEGORY_DEVICE_VIDEO_INPUT);
 }
 
-av_cold const AVOutputFormat *av_output_audio_device_next(const AVOutputFormat *d)
+av_cold const FFOutputFormat *av_output_audio_device_next(const FFOutputFormat *d)
 {
     return next_output(d, AV_CLASS_CATEGORY_DEVICE_AUDIO_OUTPUT);
 }
 
-av_cold const AVOutputFormat *av_output_video_device_next(const AVOutputFormat *d)
+av_cold const FFOutputFormat *av_output_video_device_next(const FFOutputFormat *d)
 {
     return next_output(d, AV_CLASS_CATEGORY_DEVICE_VIDEO_OUTPUT);
 }

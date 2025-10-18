@@ -83,7 +83,7 @@ void avdevice_register_all(void);
  * if d is non-NULL, returns the next registered input audio/video device after d
  * or NULL if d is the last one.
  */
-const AVInputFormat *av_input_audio_device_next(const AVInputFormat  *d);
+const FFInputFormat *av_input_audio_device_next(const FFInputFormat  *d);
 
 /**
  * Video input devices iterator.
@@ -92,7 +92,7 @@ const AVInputFormat *av_input_audio_device_next(const AVInputFormat  *d);
  * if d is non-NULL, returns the next registered input audio/video device after d
  * or NULL if d is the last one.
  */
-const AVInputFormat *av_input_video_device_next(const AVInputFormat  *d);
+const FFInputFormat *av_input_video_device_next(const FFInputFormat  *d);
 
 /**
  * Audio output devices iterator.
@@ -101,7 +101,7 @@ const AVInputFormat *av_input_video_device_next(const AVInputFormat  *d);
  * if d is non-NULL, returns the next registered output audio/video device after d
  * or NULL if d is the last one.
  */
-const AVOutputFormat *av_output_audio_device_next(const AVOutputFormat *d);
+const FFOutputFormat *av_output_audio_device_next(const FFOutputFormat *d);
 
 /**
  * Video output devices iterator.
@@ -110,7 +110,7 @@ const AVOutputFormat *av_output_audio_device_next(const AVOutputFormat *d);
  * if d is non-NULL, returns the next registered output audio/video device after d
  * or NULL if d is the last one.
  */
-const AVOutputFormat *av_output_video_device_next(const AVOutputFormat *d);
+const FFOutputFormat *av_output_video_device_next(const FFOutputFormat *d);
 
 typedef struct AVDeviceRect {
     int x;      /**< x coordinate of top left corner */
@@ -385,9 +385,9 @@ void avdevice_free_list_devices(AVDeviceInfoList **device_list);
  * @return count of autodetected devices, negative on error.
  * @note device argument takes precedence over device_name when both are set.
  */
-int avdevice_list_input_sources(const AVInputFormat *device, const char *device_name,
+int avdevice_list_input_sources(const FFInputFormat *device, const char *device_name,
                                 AVDictionary *device_options, AVDeviceInfoList **device_list);
-int avdevice_list_output_sinks(const AVOutputFormat *device, const char *device_name,
+int avdevice_list_output_sinks(const FFOutputFormat *device, const char *device_name,
                                AVDictionary *device_options, AVDeviceInfoList **device_list);
 
 /**
